@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NewsFeed - Interactive Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-mode">
+  <div class="toast-container">
+    <div id="toast-message" class="toast align-items-center text-white bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="toast-body"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <button class="btn btn-light me-2" onclick="toggleSidebar()">☰</button>
+      <a class="navbar-brand fw-bold" href="#">📰 NewsFeed</a>
+      <input type="text" id="search-input" class="form-control me-2" placeholder="Search news..." style="max-width: 200px;" />
+      <button class="btn btn-outline-light me-2" onclick="searchNews()">🔍</button>
+      <button class="btn btn-outline-light" id="toggle-mode-btn" onclick="toggleMode()">🌙 Dark Mode</button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); showSignIn()">Sign In</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); showSignUp()">Sign Up</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); showDashboard()">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); if (!loggedInUser) { showToast('Sign in to access bookmarks', 'warning'); return; } showBookmarks();">Bookmarks</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); showAbout()">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); logout()">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="sidebar" class="sidebar-slide">
+    <div class="px-3 pt-3 text-center">
+      <img id="avatar" src="" class="rounded-circle" width="80" alt="User Avatar" />
+      <h5 id="sidebar-user-name">Guest</h5>
+    </div>
+    <ul class="nav flex-column px-3 mt-3">
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('general'); toggleSidebar()">📰 General</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('world'); toggleSidebar()">🌍 World</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('nation'); toggleSidebar()">🏛️ Nation</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('business'); toggleSidebar()">💼 Business</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('technology'); toggleSidebar()">💻 Technology</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('entertainment'); toggleSidebar()">🎬 Entertainment</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('sports'); toggleSidebar()">⚽ Sports</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('science'); toggleSidebar()">🔬 Science</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="event.preventDefault(); loadNews('health'); toggleSidebar()">💊 Health</a></li>
+    </ul>
+  </div>
+
+  <div class="container mt-4 fade-in" id="main-section">
+    <div id="sign-in-section" style="display:none;">
+      <h3>Sign In</h3>
+      <form id="sign-in-form">
+        <div class="mb-3">
+          <label>Email</label>
+          <input type="email" class="form-control" id="sign-in-email" required />
+        </div>
+        <div class="mb-3">
+          <label>Password</label>
+          <input type="password" class="form-control" id="sign-in-password" required />
+        </div>
+        <button class="btn btn-primary" type="submit">Sign In</button>
+      </form>
+    </div>
+
+    <div id="sign-up-section" style="display:none;">
+      <h3>Sign Up</h3>
+      <form id="sign-up-form">
+        <div class="mb-3">
+          <label>Name</label>
+          <input type="text" class="form-control" id="sign-up-name" required />
+        </div>
+        <div class="mb-3">
+          <label>Email</label>
+          <input type="email" class="form-control" id="sign-up-email" required />
+        </div>
+        <div class="mb-3">
+          <label>Password</label>
+          <input type="password" class="form-control" id="sign-up-password" required />
+        </div>
+        <button class="btn btn-success" type="submit">Sign Up</button>
+      </form>
+    </div>
+
+    <div id="dashboard-section" style="display:none;">
+      <h3>Welcome, <span id="main-user-name">Guest</span></h3>
+      <div class="row" id="news-container"></div>
+    </div>
+
+    <div id="bookmarks-section" style="display:none;">
+      <h3>Your Bookmarked News</h3>
+      <div class="row" id="bookmarks-container"></div>
+    </div>
+
+    <div id="about-section" style="display:none;" class="about-section">
+      <h3>📰 Welcome to NewsFeed!</h3>
+      <p>Hey there! 👋 Welcome to <strong>NewsFeed</strong> – your go-to spot for all things news, updated in real-time and wrapped in a sleek, easy-to-use dashboard.</p>
+      <p>We know how overwhelming it can be to keep up with everything happening around the world, so we built <strong>NewsFeed</strong> to make news simple, fun, and tailored just for you!</p>
+
+      <h4>What makes NewsFeed awesome?</h4>
+      <ul>
+        <li>🔎 <strong>Search anything:</strong> Looking for the latest on your favorite topics? Just type and explore!</li>
+        <li>🌙 <strong>Light & Dark modes:</strong> Whether you're a day owl or a night reader, switch themes effortlessly.</li>
+        <li>⭐ <strong>Bookmark your faves:</strong> Save stories you love and revisit anytime.</li>
+        <li>📚 <strong>Categories galore:</strong> From technology 💻 to sports ⚽ and health 💊 – pick what matters most to you!</li>
+        <li>📱 <strong>Mobile-friendly:</strong> News on the go? We got you covered.</li>
+      </ul>
+
+      <p>We hope <strong>NewsFeed</strong> becomes your favorite daily read. Dive in, explore, and stay informed – your next headline is just a click away!</p>
+    </div>
+  </div>
+
+  <!-- Chatbot -->
+  <button class="chatbot-toggle" id="chatbot-toggle" onclick="toggleChatbot()">
+    🤖
+  </button>
+
+  <div class="chatbot-container" id="chatbot-container">
+    <div class="chatbot-header">
+      <h5>🤖 NewsBot Assistant</h5>
+      <button onclick="toggleChatbot()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
+    </div>
+    <div class="chatbot-messages" id="chatbot-messages">
+      <div class="message bot-message">
+        👋 Hi! I'm NewsBot, your AI assistant for exploring world news! Ask me about any topic, country, or category and I'll help you find relevant news articles.
+      </div>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" id="chatbot-input" placeholder="Ask about news..." onkeypress="handleChatKeyPress(event)">
+      <button onclick="sendChatMessage()">Send</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
