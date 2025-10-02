@@ -230,7 +230,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Developer:** Aryan Thakur
 - 🐙 **GitHub:** [@Aryanthakur7](https://github.com/Aryanthakur7)
-- 💼 **LinkedIn:** [Connect with me]([https://linkedin.com/in/your-linkedin-profile](https://www.linkedin.com/in/aryan-thakur-095697262/))
+- 💼 **LinkedIn:** [Connect with me](https://www.linkedin.com/in/aryan-thakur-095697262/)
 - 📧 **Email:** aryandbg0407@gmail.com
 
 
